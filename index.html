@@ -169,6 +169,20 @@
     margin-top: 3px;
     flex: 0 0 auto;
   }
+  #raffle-root .rf-consent a {
+    color: var(--blue);
+  }
+  #raffle-root .rf-vk-note {
+    text-align: center;
+    font-size: 13px;
+    color: #666;
+    margin: 16px 0 0;
+    line-height: 1.5;
+  }
+  #raffle-root .rf-vk-note a {
+    color: var(--blue);
+    font-weight: 500;
+  }
   #raffle-root .rf-honeypot {
     position: absolute;
     left: -9999px;
@@ -388,15 +402,17 @@
 
           <label class="rf-consent">
             <input type="checkbox" id="rfConsent">
-            <span>Я согласен(на) на обработку персональных данных в соответствии с политикой конфиденциальности</span>
+            <span>Я согласен(на) на обработку персональных данных в соответствии с <a href="https://школа32.рф/politika" target="_blank" rel="noopener" onclick="event.stopPropagation()">политикой конфиденциальности</a></span>
           </label>
 
           <label class="rf-consent">
             <input type="checkbox" id="rfContactConsent">
-            <span>Я согласен(на), что магазин свяжется со мной по указанному телефону или VK, чтобы сообщить о результатах розыгрыша</span>
+            <span>Я согласен(на) на получение рекламных и информационных рассылок от магазина «Кипяток» по телефону, SMS и в мессенджерах (в том числе для объявлений о результатах розыгрыша)</span>
           </label>
 
           <button type="submit" class="rf-submit" id="rfSubmit">Зарегистрировать</button>
+
+          <p class="rf-vk-note">Результаты розыгрыша будут опубликованы в нашей группе ВКонтакте — <a href="https://vk.com/school_bryansk32" target="_blank" rel="noopener">vk.com/school_bryansk32</a><br>Вступайте, чтобы не пропустить</p>
         </div>
         </form>
 
