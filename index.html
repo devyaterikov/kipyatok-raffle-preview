@@ -151,7 +151,7 @@
     gap: 10px;
     font-size: 13px;
     color: #444;
-    margin-bottom: 20px;
+    margin-bottom: 14px;
   }
   #raffle-root .rf-consent input {
     margin-top: 3px;
@@ -183,6 +183,13 @@
     color: var(--dark-green);
     font-weight: 500;
     margin-top: 8px;
+  }
+  #raffle-root .rf-signed-in {
+    font-size: 13px;
+    color: var(--dark-green);
+    font-weight: 500;
+    margin-bottom: 16px;
+    text-align: center;
   }
   #raffle-root .rf-submit {
     width: 100%;
@@ -243,12 +250,22 @@
 
       <form id="rfForm" style="display:none;">
 
-        <div id="rfAuthBox" class="rf-auth-box" style="display:none;">
-          <div id="rfGoogleAuthSection">
-            <p>Для защиты от накруток нужно подтвердить вход через Google-аккаунт</p>
-            <div id="googleSignInButton"></div>
-            <div id="rfAuthStatus" class="rf-auth-status"></div>
+        <div id="rfAuthSection" class="rf-auth-box" style="display:none;">
+          <p>Для защиты от накруток подтвердите вход через один из аккаунтов:</p>
+
+          <div id="rfProviderButtons">
+            <div id="rfGoogleAuthSection" style="display:none; margin-bottom:10px;">
+              <div id="googleSignInButton"></div>
+            </div>
+            <div id="rfVkAuthSection" style="display:none; margin-bottom:10px;">
+              <div id="vkSignInButton"></div>
+            </div>
+            <div id="rfYandexAuthSection" style="display:none; margin-bottom:10px;">
+              <button type="button" class="rf-add-code" id="rfYandexButton">Войти через Яндекс</button>
+            </div>
           </div>
+
+          <div id="rfAuthStatus" class="rf-auth-status"></div>
 
           <div id="rfEmbeddedSection" style="margin-top:14px; padding-top:14px; border-top:1px dashed #cfd8d5;">
             <p id="rfEmbeddedText">Если кнопка входа не открывается (часто бывает в Telegram, VK и других приложениях) — откройте эту страницу в Safari или Chrome:</p>
@@ -258,42 +275,52 @@
           </div>
         </div>
 
-        <div class="rf-field">
-          <label>Код(ы) с покупки</label>
-          <div id="rfCodesContainer"></div>
-          <button type="button" class="rf-add-code" id="rfAddCode">+ Добавить ещё код</button>
-          <div class="rf-hint">Код регистрозависимый — вводите заглавные и строчные буквы точно как на бирке.</div>
+        <div id="rfFieldsSection" style="display:none;">
+
+          <div id="rfSignedInStatus" class="rf-signed-in" style="display:none;">Вход выполнен ✓</div>
+
+          <div class="rf-field">
+            <label>Код(ы) с покупки</label>
+            <div id="rfCodesContainer"></div>
+            <button type="button" class="rf-add-code" id="rfAddCode">+ Добавить ещё код</button>
+            <div class="rf-hint">Код регистрозависимый — вводите заглавные и строчные буквы точно как на бирке.</div>
+          </div>
+
+          <div class="rf-field">
+            <label for="rfFio">ФИО</label>
+            <input type="text" id="rfFio" autocomplete="name" maxlength="200">
+          </div>
+
+          <div class="rf-field">
+            <label for="rfPhone">Телефон</label>
+            <input type="tel" id="rfPhone" autocomplete="tel" placeholder="+7 (___) ___-__-__" maxlength="18">
+          </div>
+
+          <div class="rf-field rf-city-wrap">
+            <label for="rfCity">Город</label>
+            <input type="text" id="rfCity" autocomplete="off" maxlength="100" placeholder="Начните вводить название города">
+            <div id="rfCityList" class="rf-city-list"></div>
+          </div>
+
+          <div class="rf-field">
+            <label for="rfVk">Ссылка на страницу VK</label>
+            <input type="text" id="rfVk" autocomplete="off" maxlength="200" placeholder="https://vk.com/ваш_профиль">
+          </div>
+
+          <input type="text" name="website" class="rf-honeypot" tabindex="-1" autocomplete="off">
+
+          <label class="rf-consent">
+            <input type="checkbox" id="rfConsent">
+            <span>Я согласен(на) на обработку персональных данных в соответствии с политикой конфиденциальности</span>
+          </label>
+
+          <label class="rf-consent">
+            <input type="checkbox" id="rfContactConsent">
+            <span>Я согласен(на), что магазин свяжется со мной по указанному телефону или VK, чтобы сообщить о результатах розыгрыша</span>
+          </label>
+
+          <button type="submit" class="rf-submit" id="rfSubmit">Зарегистрировать</button>
         </div>
-
-        <div class="rf-field">
-          <label for="rfFio">ФИО</label>
-          <input type="text" id="rfFio" autocomplete="name" maxlength="200">
-        </div>
-
-        <div class="rf-field">
-          <label for="rfPhone">Телефон</label>
-          <input type="tel" id="rfPhone" autocomplete="tel" placeholder="+7 (___) ___-__-__" maxlength="18">
-        </div>
-
-        <div class="rf-field rf-city-wrap">
-          <label for="rfCity">Город</label>
-          <input type="text" id="rfCity" autocomplete="off" maxlength="100" placeholder="Начните вводить название города">
-          <div id="rfCityList" class="rf-city-list"></div>
-        </div>
-
-        <div class="rf-field">
-          <label for="rfVk">Ссылка на страницу VK</label>
-          <input type="text" id="rfVk" autocomplete="off" maxlength="200" placeholder="https://vk.com/ваш_профиль">
-        </div>
-
-        <input type="text" name="website" class="rf-honeypot" tabindex="-1" autocomplete="off">
-
-        <label class="rf-consent">
-          <input type="checkbox" id="rfConsent">
-          <span>Я согласен(на) на обработку персональных данных в соответствии с политикой конфиденциальности</span>
-        </label>
-
-        <button type="submit" class="rf-submit" id="rfSubmit">Зарегистрировать</button>
 
         <div id="rfResults" class="rf-results"></div>
         <div id="rfErrorBox" class="rf-error-box" style="display:none;"></div>
@@ -305,23 +332,27 @@
 
 <script>
 (function () {
-  // ---- Настройки (заполняются после развёртывания backend'а и настройки OAuth) ----
+  // ---- Настройки (заполняются после развёртывания backend'а и настройки провайдеров) ----
   var BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwi4qrVCsJQkMPbHYJbyvSnMrjo_VmU4cQRc0SPmxP9uojRSTkiEoQnrhOnA4Ety9igyQ/exec';
   var GOOGLE_CLIENT_ID = '662163764701-ir3qq7ehbd960avj7icqpe1n8978iq2h.apps.googleusercontent.com';
+  var VK_APP_ID = 'PASTE_VK_APP_ID_HERE';
+  var YANDEX_CLIENT_ID = 'PASTE_YANDEX_CLIENT_ID_HERE';
   var MAX_CODES = 20;
 
   var CITIES = ["Брянск","Абаза","Абакан","Абдулино","Абинск","Агидель","Агрыз","Адыгейск","Азнакаево","Азов","Ак-Довурак","Аксай","Алагир","Алапаевск","Алатырь","Алдан","Алейск","Александров","Александровск","Александровск-Сахалинский","Алексеевка","Алексин","Алзамай","Алупка","Алушта","Альметьевск","Амурск","Анадырь","Анапа","Ангарск","Андреаполь","Анжеро-Судженск","Анива","Апатиты","Апрелевка","Апшеронск","Арамиль","Аргун","Ардатов","Ардон","Арзамас","Аркадак","Армавир","Армянск","Арсеньев","Арск","Артём","Артёмовск","Артёмовский","Архангельск","Асбест","Асино","Астрахань","Аткарск","Ахтубинск","Ачинск","Ачхой-Мартан","Аша","Бабаево","Бабушкин","Бавлы","Багратионовск","Байкальск","Баймак","Бакал","Баксан","Балабаново","Балаклава","Балаково","Балахна","Балашиха","Балашов","Балей","Балтийск","Барабинск","Барнаул","Барыш","Батайск","Бахчисарай","Бежецк","Белая Калитва","Белая Холуница","Белгород","Белебей","Белёв","Белинский","Белово","Белогорск (Амурская область)","Белогорск (Крым)","Белозерск","Белокуриха","Беломорск","Белоозёрский","Белорецк","Белореченск","Белоусово","Белоярский","Белый","Бердск","Березники","Берёзовский (Кемеровская область)","Берёзовский (Свердловская область)","Беслан","Бийск","Бикин","Билибино","Биробиджан","Бирск","Бирюсинск","Бирюч","Благовещенск (Амурская область)","Благовещенск (Башкортостан)","Благодарный","Бобров","Богданович","Богородицк","Богородск","Боготол","Богучар","Бодайбо","Бокситогорск","Болгар","Бологое","Болотное","Болохово","Болхов","Большой Камень","Бор","Борзя","Борисоглебск","Боровичи","Боровск","Бородино","Братск","Бронницы","Бугульма","Бугуруслан","Будённовск","Бузулук","Буинск","Буй","Буйнакск","Бутурлиновка","Валдай","Валуйки","Велиж","Великие Луки","Великий Новгород","Великий Устюг","Вельск","Венёв","Верещагино","Верея","Верхнеуральск","Верхний Тагил","Верхний Уфалей","Верхняя Пышма","Верхняя Салда","Верхняя Тура","Верхотурье","Верхоянск","Весьегонск","Ветлуга","Видное","Вилюйск","Вилючинск","Вихоревка","Вичуга","Владивосток","Владикавказ","Владимир","Волгоград","Волгодонск","Волгореченск","Волжск","Волжский","Вологда","Володарск","Волоколамск","Волосово","Волхов","Волчанск","Вольск","Воркута","Воронеж","Ворсма","Воскресенск","Воткинск","Всеволожск","Вуктыл","Выборг","Выкса","Высоковск","Высоцк","Вытегра","Вышний Волочёк","Вяземский","Вязники","Вязьма","Вятские Поляны","Гаврилов Посад","Гаврилов-Ям","Гагарин","Гаджиево","Гай","Галич","Гатчина","Гвардейск","Гдов","Геленджик","Георгиевск","Глазов","Голицыно","Горбатов","Горно-Алтайск","Горнозаводск","Горняк","Городец","Городище","Городовиковск","Гороховец","Горячий Ключ","Грайворон","Гремячинск","Грозный","Грязи","Грязовец","Губаха","Губкин","Губкинский","Гудермес","Гуково","Гулькевичи","Гурьевск (Калининградская область)","Гурьевск (Кемеровская область)","Гусев","Гусиноозёрск","Гусь-Хрустальный","Давлеканово","Дагестанские Огни","Далматово","Дальнегорск","Дальнереченск","Данилов","Данков","Дегтярск","Дедовск","Демидов","Дербент","Десногорск","Джанкой","Дзержинск","Дзержинский","Дивногорск","Дигора","Димитровград","Дмитриев","Дмитров","Дмитровск","Дно","Добрянка","Долгопрудный","Долинск","Домодедово","Донецк","Донской","Дорогобуж","Дрезна","Дубна","Дубовка","Дудинка","Духовщина","Дюртюли","Дятьково","Евпатория","Егорьевск","Ейск","Екатеринбург","Елабуга","Елец","Елизово","Ельня","Еманжелинск","Емва","Енисейск","Ермолино","Ершов","Ессентуки","Ефремов","Железноводск","Железногорск (Красноярский край)","Железногорск (Курская область)","Железногорск-Илимский","Жердевка","Жигулёвск","Жиздра","Жирновск","Жуков","Жуковка","Жуковский","Завитинск","Заводоуковск","Заволжск","Заволжье","Задонск","Заинск","Закаменск","Заозёрный","Заозёрск","Западная Двина","Заполярный","Зарайск","Заречный (Пензенская область)","Заречный (Свердловская область)","Заринск","Звенигово","Звенигород","Зверево","Зеленогорск (Красноярский край)","Зеленогорск (Санкт-Петербург)","Зеленоград","Зеленоградск","Зеленодольск","Зеленокумск","Зерноград","Зея","Зима","Златоуст","Злынка","Змеиногорск","Знаменск","Зубцов","Зуевка","Ивангород","Иваново","Ивантеевка","Ивдель","Игарка","Ижевск","Избербаш","Изобильный","Иланский","Инза","Инкерман","Иннополис","Инсар","Инта","Ипатово","Ирбит","Иркутск","Исилькуль","Искитим","Истра","Ишим","Ишимбай","Йошкар-Ола","Кадников","Казань","Калач","Калач-на-Дону","Калачинск","Калининград","Калининск","Калтан","Калуга","Калязин","Камбарка","Каменка","Каменногорск","Каменск-Уральский","Каменск-Шахтинский","Камень-на-Оби","Камешково","Камызяк","Камышин","Камышлов","Канаш","Кандалакша","Канск","Карабаново","Карабаш","Карабулак","Карасук","Карачаевск","Карачев","Каргат","Каргополь","Карпинск","Карталы","Касимов","Касли","Каспийск","Катав-Ивановск","Катайск","Качканар","Кашин","Кашира","Кедровый","Кемерово","Кемь","Керчь","Кизел","Кизилюрт","Кизляр","Кимовск","Кимры","Кингисепп","Кинель","Кинешма","Киреевск","Киренск","Киржач","Кириллов","Кириши","Киров (Калужская область)","Киров (Кировская область)","Кировград","Кирово-Чепецк","Кировск (Ленинградская область)","Кировск (Мурманская область)","Кирс","Кирсанов","Киселёвск","Кисловодск","Клин","Клинцы","Княгинино","Ковдор","Ковров","Ковылкино","Когалым","Кодинск","Козельск","Козловка","Козьмодемьянск","Кола","Кологрив","Коломна","Колпашево","Колпино","Колтуши","Кольчугино","Коммунар","Комсомольск","Комсомольск-на-Амуре","Конаково","Кондопога","Кондрово","Константиновск","Копейск","Кораблино","Кореновск","Коркино","Королёв","Короча","Корсаков","Коряжма","Костерёво","Костомукша","Кострома","Котельники","Котельниково","Котельнич","Котлас","Котово","Котовск","Кохма","Красавино","Красноармейск (Московская область)","Красноармейск (Саратовская область)","Красновишерск","Красногорск","Краснодар","Красное Село","Краснозаводск","Краснознаменск (Калининградская область)","Краснознаменск (Московская область)","Краснокаменск","Краснокамск","Красноперекопск","Краснослободск (Волгоградская область)","Краснослободск (Мордовия)","Краснотурьинск","Красноуральск","Красноуфимск","Красноярск","Красный Кут","Красный Сулин","Красный Холм","Кремёнки","Кронштадт","Кропоткин","Крымск","Кстово","Кубинка","Кувандык","Кувшиново","Кудрово","Кудымкар","Кузнецк","Куйбышев","Кукмор","Кулебаки","Кумертау","Кунгур","Купино","Курган","Курганинск","Курильск","Курлово","Куровское","Курск","Куртамыш","Курчалой","Курчатов","Куса","Кушва","Кызыл","Кыштым","Кяхта","Лабинск","Лабытнанги","Лагань","Ладушкин","Лаишево","Лакинск","Лангепас","Лахденпохья","Лебедянь","Лениногорск","Ленинск","Ленинск-Кузнецкий","Ленск","Лермонтов","Лесной","Лесозаводск","Лесосибирск","Ливны","Ликино-Дулёво","Липецк","Липки","Лиски","Лихославль","Лобня","Лодейное Поле","Ломоносов","Лосино-Петровский","Луга","Луза","Лукоянов","Луховицы","Лысково","Лысьва","Лыткарино","Льгов","Любань","Люберцы","Любим","Людиново","Лянтор","Магадан","Магас","Магнитогорск","Майкоп","Майский","Макаров","Макарьев","Макушино","Малая Вишера","Малгобек","Малмыж","Малоархангельск","Малоярославец","Мамадыш","Мамоново","Мантурово","Мариинск","Мариинский Посад","Маркс","Махачкала","Мглин","Мегион","Медвежьегорск","Медногорск","Медынь","Межгорье","Междуреченск","Мезень","Меленки","Мелеуз","Менделеевск","Мензелинск","Мещовск","Миасс","Микунь","Миллерово","Минеральные Воды","Минусинск","Миньяр","Мирный (Архангельская область)","Мирный (Якутия)","Михайлов","Михайловка","Михайловск (Свердловская область)","Михайловск (Ставропольский край)","Мичуринск","Могоча","Можайск","Можга","Моздок","Мончегорск","Морозовск","Моршанск","Мосальск","Москва","Московский","Муравленко","Мураши","Мурино","Мурманск","Муром","Мценск","Мыски","Мытищи","Мышкин","Набережные Челны","Навашино","Наволоки","Надым","Назарово","Назрань","Называевск","Нальчик","Нариманов","Наро-Фоминск","Нарткала","Нарьян-Мар","Находка","Невель","Невельск","Невинномысск","Невьянск","Нелидово","Неман","Нерехта","Нерчинск","Нерюнгри","Нестеров","Нефтегорск","Нефтекамск","Нефтекумск","Нефтеюганск","Нея","Нижневартовск","Нижнекамск","Нижнеудинск","Нижние Серги","Нижний Ломов","Нижний Новгород","Нижний Тагил","Нижняя Салда","Нижняя Тура","Николаевск","Николаевск-на-Амуре","Никольск (Вологодская область)","Никольск (Пензенская область)","Никольское","Новая Ладога","Новая Ляля","Новоалександровск","Новоалтайск","Новоаннинский","Нововоронеж","Новодвинск","Новозыбков","Новокубанск","Новокузнецк","Новокуйбышевск","Новомичуринск","Новомосковск","Новопавловск","Новоржев","Новороссийск","Новосибирск","Новосиль","Новосокольники","Новотроицк","Новоузенск","Новоульяновск","Новоуральск","Новохопёрск","Новочебоксарск","Новочеркасск","Новошахтинск","Новый Оскол","Новый Уренгой","Ногинск","Нолинск","Норильск","Ноябрьск","Нурлат","Нытва","Нюрба","Нягань","Нязепетровск","Няндома","Облучье","Обнинск","Обоянь","Обь","Одинцово","Озёрск (Калининградская область)","Озёрск (Челябинская область)","Озёры","Октябрьск","Октябрьский","Окуловка","Олёкминск","Оленегорск","Олонец","Омск","Омутнинск","Онега","Опочка","Орёл","Оренбург","Орехово-Зуево","Орлов","Орск","Оса","Осинники","Осташков","Остров","Островной","Острогожск","Отрадное","Отрадный","Оха","Оханск","Очёр","Павлово","Павловск (Воронежская область)","Павловск (Санкт-Петербург)","Павловский Посад","Палласовка","Партизанск","Певек","Пенза","Первомайск","Первоуральск","Перевоз","Пересвет","Переславль-Залесский","Пермь","Пестово","Петергоф","Петров Вал","Петровск","Петровск-Забайкальский","Петрозаводск","Петропавловск-Камчатский","Петухово","Петушки","Печора","Печоры","Пикалёво","Пионерский","Питкяранта","Плавск","Пласт","Плёс","Поворино","Подольск","Подпорожье","Покачи","Покров","Покровск","Полевской","Полесск","Полысаево","Полярные Зори","Полярный","Поронайск","Порхов","Похвистнево","Почеп","Починок","Пошехонье","Правдинск","Приволжск","Приморск (Калининградская область)","Приморск (Ленинградская область)","Приморско-Ахтарск","Приозерск","Прокопьевск","Пролетарск","Протвино","Прохладный","Псков","Пугачёв","Пудож","Пустошка","Пучеж","Пушкин","Пушкино","Пущино","Пыталово","Пыть-Ях","Пятигорск","Радужный (Владимирская область)","Радужный (Ханты-Мансийский АО)","Райчихинск","Раменское","Рассказово","Ревда","Реж","Реутов","Ржев","Родники","Рославль","Россошь","Ростов","Ростов-на-Дону","Рошаль","Ртищево","Рубцовск","Рудня","Руза","Рузаевка","Рыбинск","Рыбное","Рыльск","Ряжск","Рязань","Саки","Салават","Салаир","Салехард","Сальск","Самара","Санкт-Петербург","Саранск","Сарапул","Саратов","Саров","Сасово","Сатка","Сафоново","Саяногорск","Саянск","Светлогорск","Светлоград","Светлый","Светогорск","Свирск","Свободный","Себеж","Севастополь","Северо-Курильск","Северобайкальск","Северодвинск","Североморск","Североуральск","Северск","Севск","Сегежа","Сельцо","Семёнов","Семикаракорск","Семилуки","Сенгилей","Серафимович","Сергач","Сергиев Посад","Сердобск","Серов","Серпухов","Сертолово","Сестрорецк","Сибай","Сим","Симферополь","Сковородино","Скопин","Славгород","Славск","Славянск-на-Кубани","Сланцы","Слободской","Слюдянка","Смоленск","Снежинск","Снежногорск","Собинка","Советск (Калининградская область)","Советск (Кировская область)","Советск (Тульская область)","Советская Гавань","Советский","Сокол","Солигалич","Соликамск","Солнечногорск","Соль-Илецк","Сольвычегодск","Сольцы","Сорочинск","Сорск","Сортавала","Сосенский","Сосновка","Сосновоборск","Сосновый Бор","Сосногорск","Сочи","Спас-Деменск","Спас-Клепики","Спасск","Спасск-Дальний","Спасск-Рязанский","Среднеколымск","Среднеуральск","Сретенск","Ставрополь","Старая Купавна","Старая Русса","Старица","Стародуб","Старый Крым","Старый Оскол","Стерлитамак","Стрежевой","Строитель","Струнино","Ступино","Суворов","Судак","Суджа","Судогда","Суздаль","Сунжа","Суоярви","Сураж","Сургут","Суровикино","Сурск","Сусуман","Сухиничи","Сухой Лог","Сызрань","Сыктывкар","Сысерть","Сычёвка","Сясьстрой","Тавда","Таганрог","Тайга","Тайшет","Талдом","Талица","Тамбов","Тара","Тарко-Сале","Таруса","Татарск","Таштагол","Тверь","Теберда","Тейково","Темников","Темрюк","Терек","Тетюши","Тимашёвск","Тихвин","Тихорецк","Тобольск","Тогучин","Тольятти","Томари","Томмот","Томск","Топки","Торжок","Торопец","Тосно","Тотьма","Трёхгорный","Троицк (Москва)","Троицк (Челябинская область)","Трубчевск","Туапсе","Туймазы","Тула","Тулун","Туран","Туринск","Тутаев","Тында","Тырныауз","Тюкалинск","Тюмень","Уварово","Углегорск","Углич","Удачный","Удомля","Ужур","Узловая","Улан-Удэ","Ульяновск","Унеча","Урай","Урень","Уржум","Урус-Мартан","Урюпинск","Усинск","Усмань","Усолье","Усолье-Сибирское","Уссурийск","Усть-Джегута","Усть-Илимск","Усть-Катав","Усть-Кут","Усть-Лабинск","Устюжна","Уфа","Ухта","Учалы","Уяр","Фатеж","Феодосия","Фокино (Брянская область)","Фокино (Приморский край)","Фролово","Фрязино","Фурманов","Хабаровск","Хадыженск","Ханты-Мансийск","Харабали","Харовск","Хасавюрт","Хвалынск","Хилок","Химки","Холм","Холмск","Хотьково","Цивильск","Цимлянск","Циолковский","Чадан","Чайковский","Чапаевск","Чаплыгин","Чебаркуль","Чебоксары","Чегем","Чекалин","Челябинск","Чердынь","Черемхово","Черепаново","Череповец","Черкесск","Чёрмоз","Черноголовка","Черногорск","Чернушка","Черняховск","Чехов","Чистополь","Чита","Чкаловск","Чудово","Чулым","Чусовой","Чухлома","Шагонар","Шадринск","Шали","Шарыпово","Шарья","Шатура","Шахты","Шахунья","Шацк","Шебекино","Шелехов","Шенкурск","Шилка","Шимановск","Шиханы","Шлиссельбург","Шумерля","Шумиха","Шуя","Щёкино","Щёлкино","Щёлково","Щербинка","Щигры","Щучье","Электрогорск","Электросталь","Электроугли","Элиста","Энгельс","Эртиль","Югорск","Южа","Южно-Сахалинск","Южно-Сухокумск","Южноуральск","Юрга","Юрьев-Польский","Юрьевец","Юрюзань","Юхнов","Ядрин","Якутск","Ялта","Ялуторовск","Янаул","Яранск","Яровое","Ярославль","Ярцево","Ясногорск","Ясный","Яхрома"];
 
   var state = {
-    requireGoogleAuth: null,
-    googleIdToken: null,
+    providers: {},
+    authProvider: null,
+    authToken: null,
     codeCount: 0
   };
 
-  var root = document.getElementById('raffle-root');
   var loadingEl = document.getElementById('rfLoading');
   var formEl = document.getElementById('rfForm');
-  var authBoxEl = document.getElementById('rfAuthBox');
+  var authSectionEl = document.getElementById('rfAuthSection');
+  var fieldsSectionEl = document.getElementById('rfFieldsSection');
+  var signedInStatusEl = document.getElementById('rfSignedInStatus');
   var authStatusEl = document.getElementById('rfAuthStatus');
   var codesContainer = document.getElementById('rfCodesContainer');
   var addCodeBtn = document.getElementById('rfAddCode');
@@ -332,6 +363,7 @@
   var cityList = document.getElementById('rfCityList');
   var phoneInput = document.getElementById('rfPhone');
   var consentInput = document.getElementById('rfConsent');
+  var contactConsentInput = document.getElementById('rfContactConsent');
   var vkInput = document.getElementById('rfVk');
   var fioInput = document.getElementById('rfFio');
 
@@ -403,16 +435,29 @@
     setTimeout(function () { cityList.classList.remove('rf-open'); }, 100);
   });
 
-  function updateSubmitState() {
-    submitBtn.disabled = state.requireGoogleAuth === true && !state.googleIdToken;
+  function isAnyProviderEnabled() {
+    return !!(state.providers.google || state.providers.vk || state.providers.yandex);
   }
 
-  function onGoogleSignIn(response) {
-    state.googleIdToken = response.credential;
-    authStatusEl.textContent = 'Вход выполнен ✓';
+  function updateSubmitState() {
+    submitBtn.disabled = isAnyProviderEnabled() && !state.authToken;
+  }
+
+  function revealFieldsSection() {
+    authSectionEl.style.display = 'none';
+    fieldsSectionEl.style.display = 'block';
+    signedInStatusEl.style.display = isAnyProviderEnabled() ? 'block' : 'none';
     updateSubmitState();
   }
-  window.__rfOnGoogleSignIn = onGoogleSignIn;
+
+  function onProviderSignIn(provider, token) {
+    state.authProvider = provider;
+    state.authToken = token;
+    revealFieldsSection();
+  }
+  window.__rfOnGoogleSignIn = function (response) {
+    onProviderSignIn('google', response.credential);
+  };
 
   function loadScriptOnce(src) {
     return new Promise(function (resolve, reject) {
@@ -431,7 +476,7 @@
   }
 
   function initEmbeddedBrowserHelp() {
-    var googleSection = document.getElementById('rfGoogleAuthSection');
+    var providerButtons = document.getElementById('rfProviderButtons');
     var embeddedText = document.getElementById('rfEmbeddedText');
     var copyLinkBtn = document.getElementById('rfCopyLink');
     var copyStatus = document.getElementById('rfCopyStatus');
@@ -440,10 +485,10 @@
     // Блок «открыть в браузере» виден всегда (см. HTML) — детект встроенных
     // браузеров ненадёжен (Telegram и на iOS, и на Android неотличим от обычного
     // браузера по User-Agent), поэтому подсказка не может зависеть только от него.
-    // Если браузер распознан точно — прячем заведомо нерабочую кнопку Google.
+    // Если браузер распознан точно — прячем заведомо нерабочие кнопки входа.
     if (isEmbeddedBrowser()) {
-      googleSection.style.display = 'none';
-      embeddedText.textContent = 'Похоже, вы открыли страницу во встроенном браузере (внутри приложения соцсети или мессенджера). Вход через Google в таких браузерах блокирует сам Google — откройте, пожалуйста, эту страницу в Safari или Chrome:';
+      providerButtons.style.display = 'none';
+      embeddedText.textContent = 'Похоже, вы открыли страницу во встроенном браузере (внутри приложения соцсети или мессенджера). Вход через такие браузеры блокируется — откройте, пожалуйста, эту страницу в Safari или Chrome:';
     }
 
     if (/Android/i.test(navigator.userAgent)) {
@@ -484,12 +529,72 @@
     loadScriptOnce('https://accounts.google.com/gsi/client').then(function () {
       google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
-        callback: onGoogleSignIn
+        callback: window.__rfOnGoogleSignIn
       });
       google.accounts.id.renderButton(
         document.getElementById('googleSignInButton'),
         { theme: 'outline', size: 'large', text: 'signin_with', locale: 'ru' }
       );
+    });
+  }
+
+  function initVkSignInButton() {
+    loadScriptOnce('https://unpkg.com/@vkid/sdk/dist-sdk/umd/index.js').then(function () {
+      VKIDSDK.Config.init({
+        app: Number(VK_APP_ID),
+        redirectUrl: location.origin + location.pathname,
+        responseMode: VKIDSDK.ConfigResponseMode.Callback,
+        source: VKIDSDK.ConfigSource.LOWCODE,
+        scope: ''
+      });
+      var oneTap = new VKIDSDK.OneTap();
+      oneTap.render({
+        container: document.getElementById('vkSignInButton'),
+        showAlternativeLogin: false
+      }).on(VKIDSDK.WidgetEvents.ERROR, function () {
+        authStatusEl.textContent = 'Не удалось войти через VK. Попробуйте другой способ.';
+      }).on(VKIDSDK.OneTapInternalEvents.LOGIN_SUCCESS, function (payload) {
+        var code = payload.code;
+        var deviceId = payload.device_id;
+        VKIDSDK.Auth.exchangeCode(code, deviceId).then(function (result) {
+          onProviderSignIn('vk', result.access_token);
+        }).catch(function () {
+          authStatusEl.textContent = 'Не удалось войти через VK. Попробуйте другой способ.';
+        });
+      });
+    });
+  }
+
+  function buildYandexAuthUrl() {
+    var redirectUri = location.origin + location.pathname;
+    return 'https://oauth.yandex.ru/authorize?response_type=code&client_id=' +
+      encodeURIComponent(YANDEX_CLIENT_ID) + '&redirect_uri=' + encodeURIComponent(redirectUri);
+  }
+
+  function initYandexButton() {
+    document.getElementById('rfYandexButton').addEventListener('click', function () {
+      window.location.href = buildYandexAuthUrl();
+    });
+  }
+
+  function checkYandexReturn() {
+    var params = new URLSearchParams(location.search);
+    var code = params.get('code');
+    if (!code) return;
+    history.replaceState({}, '', location.pathname);
+    authStatusEl.textContent = 'Завершаем вход через Яндекс…';
+    fetch(BACKEND_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'yandex_exchange', code: code })
+    }).then(function (res) { return res.json(); }).then(function (data) {
+      if (data.ok && data.accessToken) {
+        onProviderSignIn('yandex', data.accessToken);
+      } else {
+        authStatusEl.textContent = 'Не удалось войти через Яндекс, попробуйте ещё раз.';
+      }
+    }).catch(function () {
+      authStatusEl.textContent = 'Не удалось войти через Яндекс, попробуйте ещё раз.';
     });
   }
 
@@ -502,11 +607,12 @@
   }
 
   var ERROR_MESSAGES = {
-    auth_required: 'Пожалуйста, войдите через Google и отправьте форму ещё раз.',
-    auth_invalid: 'Не удалось подтвердить вход через Google. Попробуйте войти ещё раз.',
+    auth_required: 'Пожалуйста, войдите заново и отправьте форму ещё раз.',
+    auth_invalid: 'Не удалось подтвердить вход. Попробуйте войти ещё раз.',
     rate_limited: 'Слишком много попыток с этого аккаунта. Попробуйте позже.',
     missing_fields: 'Заполните, пожалуйста, все поля формы.',
     invalid_vk: 'Ссылка на VK должна начинаться с vk.com/ или vk.ru/.',
+    consent_required: 'Нужно согласиться, что мы сможем связаться с вами по итогам розыгрыша.',
     no_codes: 'Добавьте хотя бы один код.',
     bad_request: 'Произошла ошибка. Попробуйте ещё раз.',
     internal_error: 'Произошла ошибка. Попробуйте ещё раз позже.',
@@ -528,6 +634,10 @@
       showError('Нужно согласиться на обработку персональных данных.');
       return;
     }
+    if (!contactConsentInput.checked) {
+      showError(ERROR_MESSAGES.consent_required);
+      return;
+    }
     var vk = vkInput.value.trim();
     if (!/^(https?:\/\/)?(www\.)?(vk\.com|vk\.ru)\//i.test(vk)) {
       showError('Ссылка на VK должна начинаться с vk.com/ или vk.ru/.');
@@ -543,7 +653,7 @@
       showError('Добавьте хотя бы один код.');
       return;
     }
-    if (state.requireGoogleAuth && !state.googleIdToken) {
+    if (isAnyProviderEnabled() && !state.authToken) {
       showError(ERROR_MESSAGES.auth_required);
       return;
     }
@@ -557,7 +667,9 @@
       city: cityInput.value.trim(),
       vk: vk,
       codes: codes,
-      googleIdToken: state.googleIdToken,
+      provider: state.authProvider,
+      token: state.authToken,
+      contactConsent: true,
       website: document.querySelector('input[name="website"]').value
     };
     fetch(BACKEND_URL, {
@@ -572,7 +684,9 @@
       if (!data.ok) {
         showError(ERROR_MESSAGES[data.error] || 'Произошла ошибка. Попробуйте ещё раз.');
         if (data.error === 'auth_required' || data.error === 'auth_invalid') {
-          authBoxEl.style.display = 'block';
+          state.authToken = null;
+          fieldsSectionEl.style.display = 'none';
+          authSectionEl.style.display = 'block';
         }
         return;
       }
@@ -594,20 +708,40 @@
   fetch(BACKEND_URL, { method: 'GET' })
     .then(function (res) { return res.json(); })
     .then(function (data) {
-      state.requireGoogleAuth = !!data.requireGoogleAuth;
+      state.providers = data.providers || {};
     }).catch(function () {
-      state.requireGoogleAuth = false;
+      state.providers = {};
     }).then(function () {
       loadingEl.style.display = 'none';
       formEl.style.display = 'block';
       addCodeRow();
-      if (state.requireGoogleAuth) {
-        authBoxEl.style.display = 'block';
-        var isEmbedded = initEmbeddedBrowserHelp();
-        if (!isEmbedded) {
+
+      if (!isAnyProviderEnabled()) {
+        revealFieldsSection();
+        return;
+      }
+
+      authSectionEl.style.display = 'block';
+      var isEmbedded = initEmbeddedBrowserHelp();
+
+      if (!isEmbedded) {
+        if (state.providers.google) {
+          document.getElementById('rfGoogleAuthSection').style.display = 'block';
           initGoogleSignInButton();
         }
+        if (state.providers.vk) {
+          document.getElementById('rfVkAuthSection').style.display = 'block';
+          initVkSignInButton();
+        }
+        if (state.providers.yandex) {
+          document.getElementById('rfYandexAuthSection').style.display = 'block';
+          initYandexButton();
+        }
+        if (state.providers.yandex) {
+          checkYandexReturn();
+        }
       }
+
       updateSubmitState();
     });
 })();
