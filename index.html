@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Розыгрыш Кипяток — превью для заказчика</title>
+</head>
+<body style="margin:0; padding:24px; background:#f4f4f4; font-family: Arial, sans-serif;">
+<p style="max-width:520px;margin:0 auto 16px;color:#888;font-size:13px;">Это временное превью для проверки перед финальной вставкой в школа32.рф.</p>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  #raffle-root {
+    --dark-green: #0E3D32;
+    --orange: #FF9E1F;
+    --coral: #F95D51;
+    --coral2: #FF8562;
+    --blue: #0077C1;
+    --light-gray: #E9E9E9;
+    font-family: 'Ubuntu', Arial, sans-serif;
+    max-width: 520px;
+    margin: 0 auto;
+    color: #1a1a1a;
+    box-sizing: border-box;
+  }
+  #raffle-root *, #raffle-root *::before, #raffle-root *::after {
+    box-sizing: border-box;
+  }
+  #raffle-root .rf-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+  #raffle-root .rf-header {
+    background: var(--dark-green);
+    color: #fff;
+    padding: 24px 28px;
+    text-align: center;
+  }
+  #raffle-root .rf-header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+  }
+  #raffle-root .rf-header p {
+    margin: 8px 0 0;
+    font-size: 14px;
+    opacity: 0.85;
+  }
+  #raffle-root .rf-body {
+    padding: 24px 28px 28px;
+  }
+  #raffle-root .rf-field {
+    margin-bottom: 18px;
+  }
+  #raffle-root label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--dark-green);
+  }
+  #raffle-root input[type="text"],
+  #raffle-root input[type="tel"] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--light-gray);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 15px;
+    background: #fafafa;
+    transition: border-color .15s;
+  }
+  #raffle-root input[type="text"]:focus,
+  #raffle-root input[type="tel"]:focus {
+    outline: none;
+    border-color: var(--blue);
+    background: #fff;
+  }
+  #raffle-root .rf-code-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  #raffle-root .rf-code-row input {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 2px;
+    text-transform: none;
+  }
+  #raffle-root .rf-code-remove {
+    flex: 0 0 auto;
+    width: 40px;
+    border: none;
+    background: var(--light-gray);
+    border-radius: 10px;
+    color: #666;
+    font-size: 18px;
+    cursor: pointer;
+  }
+  #raffle-root .rf-add-code {
+    background: none;
+    border: 1.5px dashed var(--blue);
+    color: var(--blue);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  #raffle-root .rf-hint {
+    font-size: 12px;
+    color: #888;
+    margin-top: 6px;
+  }
+  #raffle-root .rf-city-wrap {
+    position: relative;
+  }
+  #raffle-root .rf-city-list {
+    position: absolute;
+    z-index: 20;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1.5px solid var(--light-gray);
+    border-radius: 10px;
+    max-height: 220px;
+    overflow-y: auto;
+    margin-top: 4px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    display: none;
+  }
+  #raffle-root .rf-city-list.rf-open {
+    display: block;
+  }
+  #raffle-root .rf-city-item {
+    padding: 10px 14px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  #raffle-root .rf-city-item:hover,
+  #raffle-root .rf-city-item.rf-active {
+    background: var(--light-gray);
+  }
+  #raffle-root .rf-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: #444;
+    margin-bottom: 20px;
+  }
+  #raffle-root .rf-consent input {
+    margin-top: 3px;
+    flex: 0 0 auto;
+  }
+  #raffle-root .rf-honeypot {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  #raffle-root .rf-auth-box {
+    background: #f4f9f7;
+    border: 1.5px solid var(--dark-green);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  #raffle-root .rf-auth-box p {
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: var(--dark-green);
+  }
+  #raffle-root .rf-auth-status {
+    font-size: 13px;
+    color: var(--dark-green);
+    font-weight: 500;
+    margin-top: 8px;
+  }
+  #raffle-root .rf-submit {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 30px;
+    background: var(--blue);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity .15s, transform .1s;
+  }
+  #raffle-root .rf-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  #raffle-root .rf-submit:not(:disabled):active {
+    transform: scale(0.98);
+  }
+  #raffle-root .rf-results {
+    margin-top: 20px;
+    font-size: 14px;
+  }
+  #raffle-root .rf-result-row {
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+  }
+  #raffle-root .rf-result-ok { background: #e7f6ef; color: #0E3D32; }
+  #raffle-root .rf-result-fail { background: #fdecea; color: #c0392b; }
+  #raffle-root .rf-error-box {
+    background: #fdecea;
+    color: #c0392b;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-top: 16px;
+    font-size: 14px;
+  }
+  #raffle-root .rf-loading {
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    padding: 20px;
+  }
+</style>
+
+<div id="raffle-root">
+  <div class="rf-card">
+    <div class="rf-header">
+      <h2>Регистрация в розыгрыше</h2>
+      <p>Введите код(ы) с покупки и заполните форму</p>
+    </div>
+    <div class="rf-body">
+
+      <div id="rfLoading" class="rf-loading">Загрузка формы…</div>
+
+      <form id="rfForm" style="display:none;">
+
+        <div id="rfAuthBox" class="rf-auth-box" style="display:none;">
+          <p>Для защиты от накруток нужно подтвердить вход через Google-аккаунт</p>
+          <div id="googleSignInButton"></div>
+          <div id="rfAuthStatus" class="rf-auth-status"></div>
+        </div>
+
+        <div class="rf-field">
+          <label>Код(ы) с покупки</label>
+          <div id="rfCodesContainer"></div>
+          <button type="button" class="rf-add-code" id="rfAddCode">+ Добавить ещё код</button>
+          <div class="rf-hint">Код регистрозависимый — вводите заглавные и строчные буквы точно как на бирке.</div>
+        </div>
+
+        <div class="rf-field">
+          <label for="rfFio">ФИО</label>
+          <input type="text" id="rfFio" autocomplete="name" maxlength="200">
+        </div>
+
+        <div class="rf-field">
+          <label for="rfPhone">Телефон</label>
+          <input type="tel" id="rfPhone" autocomplete="tel" placeholder="+7 (___) ___-__-__" maxlength="18">
+        </div>
+
+        <div class="rf-field rf-city-wrap">
+          <label for="rfCity">Город</label>
+          <input type="text" id="rfCity" autocomplete="off" maxlength="100" placeholder="Начните вводить название города">
+          <div id="rfCityList" class="rf-city-list"></div>
+        </div>
+
+        <div class="rf-field">
+          <label for="rfVk">Ссылка на страницу VK</label>
+          <input type="text" id="rfVk" autocomplete="off" maxlength="200" placeholder="https://vk.com/ваш_профиль">
+        </div>
+
+        <input type="text" name="website" class="rf-honeypot" tabindex="-1" autocomplete="off">
+
+        <label class="rf-consent">
+          <input type="checkbox" id="rfConsent">
+          <span>Я согласен(на) на обработку персональных данных в соответствии с политикой конфиденциальности</span>
+        </label>
+
+        <button type="submit" class="rf-submit" id="rfSubmit">Зарегистрировать</button>
+
+        <div id="rfResults" class="rf-results"></div>
+        <div id="rfErrorBox" class="rf-error-box" style="display:none;"></div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ---- Настройки (заполняются после развёртывания backend'а и настройки OAuth) ----
+  var BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwi4qrVCsJQkMPbHYJbyvSnMrjo_VmU4cQRc0SPmxP9uojRSTkiEoQnrhOnA4Ety9igyQ/exec';
+  var GOOGLE_CLIENT_ID = '662163764701-ir3qq7ehbd960avj7icqpe1n8978iq2h.apps.googleusercontent.com';
+  var MAX_CODES = 20;
+
+  var CITIES = ["Брянск","Абаза","Абакан","Абдулино","Абинск","Агидель","Агрыз","Адыгейск","Азнакаево","Азов","Ак-Довурак","Аксай","Алагир","Алапаевск","Алатырь","Алдан","Алейск","Александров","Александровск","Александровск-Сахалинский","Алексеевка","Алексин","Алзамай","Алупка","Алушта","Альметьевск","Амурск","Анадырь","Анапа","Ангарск","Андреаполь","Анжеро-Судженск","Анива","Апатиты","Апрелевка","Апшеронск","Арамиль","Аргун","Ардатов","Ардон","Арзамас","Аркадак","Армавир","Армянск","Арсеньев","Арск","Артём","Артёмовск","Артёмовский","Архангельск","Асбест","Асино","Астрахань","Аткарск","Ахтубинск","Ачинск","Ачхой-Мартан","Аша","Бабаево","Бабушкин","Бавлы","Багратионовск","Байкальск","Баймак","Бакал","Баксан","Балабаново","Балаклава","Балаково","Балахна","Балашиха","Балашов","Балей","Балтийск","Барабинск","Барнаул","Барыш","Батайск","Бахчисарай","Бежецк","Белая Калитва","Белая Холуница","Белгород","Белебей","Белёв","Белинский","Белово","Белогорск (Амурская область)","Белогорск (Крым)","Белозерск","Белокуриха","Беломорск","Белоозёрский","Белорецк","Белореченск","Белоусово","Белоярский","Белый","Бердск","Березники","Берёзовский (Кемеровская область)","Берёзовский (Свердловская область)","Беслан","Бийск","Бикин","Билибино","Биробиджан","Бирск","Бирюсинск","Бирюч","Благовещенск (Амурская область)","Благовещенск (Башкортостан)","Благодарный","Бобров","Богданович","Богородицк","Богородск","Боготол","Богучар","Бодайбо","Бокситогорск","Болгар","Бологое","Болотное","Болохово","Болхов","Большой Камень","Бор","Борзя","Борисоглебск","Боровичи","Боровск","Бородино","Братск","Бронницы","Бугульма","Бугуруслан","Будённовск","Бузулук","Буинск","Буй","Буйнакск","Бутурлиновка","Валдай","Валуйки","Велиж","Великие Луки","Великий Новгород","Великий Устюг","Вельск","Венёв","Верещагино","Верея","Верхнеуральск","Верхний Тагил","Верхний Уфалей","Верхняя Пышма","Верхняя Салда","Верхняя Тура","Верхотурье","Верхоянск","Весьегонск","Ветлуга","Видное","Вилюйск","Вилючинск","Вихоревка","Вичуга","Владивосток","Владикавказ","Владимир","Волгоград","Волгодонск","Волгореченск","Волжск","Волжский","Вологда","Володарск","Волоколамск","Волосово","Волхов","Волчанск","Вольск","Воркута","Воронеж","Ворсма","Воскресенск","Воткинск","Всеволожск","Вуктыл","Выборг","Выкса","Высоковск","Высоцк","Вытегра","Вышний Волочёк","Вяземский","Вязники","Вязьма","Вятские Поляны","Гаврилов Посад","Гаврилов-Ям","Гагарин","Гаджиево","Гай","Галич","Гатчина","Гвардейск","Гдов","Геленджик","Георгиевск","Глазов","Голицыно","Горбатов","Горно-Алтайск","Горнозаводск","Горняк","Городец","Городище","Городовиковск","Гороховец","Горячий Ключ","Грайворон","Гремячинск","Грозный","Грязи","Грязовец","Губаха","Губкин","Губкинский","Гудермес","Гуково","Гулькевичи","Гурьевск (Калининградская область)","Гурьевск (Кемеровская область)","Гусев","Гусиноозёрск","Гусь-Хрустальный","Давлеканово","Дагестанские Огни","Далматово","Дальнегорск","Дальнереченск","Данилов","Данков","Дегтярск","Дедовск","Демидов","Дербент","Десногорск","Джанкой","Дзержинск","Дзержинский","Дивногорск","Дигора","Димитровград","Дмитриев","Дмитров","Дмитровск","Дно","Добрянка","Долгопрудный","Долинск","Домодедово","Донецк","Донской","Дорогобуж","Дрезна","Дубна","Дубовка","Дудинка","Духовщина","Дюртюли","Дятьково","Евпатория","Егорьевск","Ейск","Екатеринбург","Елабуга","Елец","Елизово","Ельня","Еманжелинск","Емва","Енисейск","Ермолино","Ершов","Ессентуки","Ефремов","Железноводск","Железногорск (Красноярский край)","Железногорск (Курская область)","Железногорск-Илимский","Жердевка","Жигулёвск","Жиздра","Жирновск","Жуков","Жуковка","Жуковский","Завитинск","Заводоуковск","Заволжск","Заволжье","Задонск","Заинск","Закаменск","Заозёрный","Заозёрск","Западная Двина","Заполярный","Зарайск","Заречный (Пензенская область)","Заречный (Свердловская область)","Заринск","Звенигово","Звенигород","Зверево","Зеленогорск (Красноярский край)","Зеленогорск (Санкт-Петербург)","Зеленоград","Зеленоградск","Зеленодольск","Зеленокумск","Зерноград","Зея","Зима","Златоуст","Злынка","Змеиногорск","Знаменск","Зубцов","Зуевка","Ивангород","Иваново","Ивантеевка","Ивдель","Игарка","Ижевск","Избербаш","Изобильный","Иланский","Инза","Инкерман","Иннополис","Инсар","Инта","Ипатово","Ирбит","Иркутск","Исилькуль","Искитим","Истра","Ишим","Ишимбай","Йошкар-Ола","Кадников","Казань","Калач","Калач-на-Дону","Калачинск","Калининград","Калининск","Калтан","Калуга","Калязин","Камбарка","Каменка","Каменногорск","Каменск-Уральский","Каменск-Шахтинский","Камень-на-Оби","Камешково","Камызяк","Камышин","Камышлов","Канаш","Кандалакша","Канск","Карабаново","Карабаш","Карабулак","Карасук","Карачаевск","Карачев","Каргат","Каргополь","Карпинск","Карталы","Касимов","Касли","Каспийск","Катав-Ивановск","Катайск","Качканар","Кашин","Кашира","Кедровый","Кемерово","Кемь","Керчь","Кизел","Кизилюрт","Кизляр","Кимовск","Кимры","Кингисепп","Кинель","Кинешма","Киреевск","Киренск","Киржач","Кириллов","Кириши","Киров (Калужская область)","Киров (Кировская область)","Кировград","Кирово-Чепецк","Кировск (Ленинградская область)","Кировск (Мурманская область)","Кирс","Кирсанов","Киселёвск","Кисловодск","Клин","Клинцы","Княгинино","Ковдор","Ковров","Ковылкино","Когалым","Кодинск","Козельск","Козловка","Козьмодемьянск","Кола","Кологрив","Коломна","Колпашево","Колпино","Колтуши","Кольчугино","Коммунар","Комсомольск","Комсомольск-на-Амуре","Конаково","Кондопога","Кондрово","Константиновск","Копейск","Кораблино","Кореновск","Коркино","Королёв","Короча","Корсаков","Коряжма","Костерёво","Костомукша","Кострома","Котельники","Котельниково","Котельнич","Котлас","Котово","Котовск","Кохма","Красавино","Красноармейск (Московская область)","Красноармейск (Саратовская область)","Красновишерск","Красногорск","Краснодар","Красное Село","Краснозаводск","Краснознаменск (Калининградская область)","Краснознаменск (Московская область)","Краснокаменск","Краснокамск","Красноперекопск","Краснослободск (Волгоградская область)","Краснослободск (Мордовия)","Краснотурьинск","Красноуральск","Красноуфимск","Красноярск","Красный Кут","Красный Сулин","Красный Холм","Кремёнки","Кронштадт","Кропоткин","Крымск","Кстово","Кубинка","Кувандык","Кувшиново","Кудрово","Кудымкар","Кузнецк","Куйбышев","Кукмор","Кулебаки","Кумертау","Кунгур","Купино","Курган","Курганинск","Курильск","Курлово","Куровское","Курск","Куртамыш","Курчалой","Курчатов","Куса","Кушва","Кызыл","Кыштым","Кяхта","Лабинск","Лабытнанги","Лагань","Ладушкин","Лаишево","Лакинск","Лангепас","Лахденпохья","Лебедянь","Лениногорск","Ленинск","Ленинск-Кузнецкий","Ленск","Лермонтов","Лесной","Лесозаводск","Лесосибирск","Ливны","Ликино-Дулёво","Липецк","Липки","Лиски","Лихославль","Лобня","Лодейное Поле","Ломоносов","Лосино-Петровский","Луга","Луза","Лукоянов","Луховицы","Лысково","Лысьва","Лыткарино","Льгов","Любань","Люберцы","Любим","Людиново","Лянтор","Магадан","Магас","Магнитогорск","Майкоп","Майский","Макаров","Макарьев","Макушино","Малая Вишера","Малгобек","Малмыж","Малоархангельск","Малоярославец","Мамадыш","Мамоново","Мантурово","Мариинск","Мариинский Посад","Маркс","Махачкала","Мглин","Мегион","Медвежьегорск","Медногорск","Медынь","Межгорье","Междуреченск","Мезень","Меленки","Мелеуз","Менделеевск","Мензелинск","Мещовск","Миасс","Микунь","Миллерово","Минеральные Воды","Минусинск","Миньяр","Мирный (Архангельская область)","Мирный (Якутия)","Михайлов","Михайловка","Михайловск (Свердловская область)","Михайловск (Ставропольский край)","Мичуринск","Могоча","Можайск","Можга","Моздок","Мончегорск","Морозовск","Моршанск","Мосальск","Москва","Московский","Муравленко","Мураши","Мурино","Мурманск","Муром","Мценск","Мыски","Мытищи","Мышкин","Набережные Челны","Навашино","Наволоки","Надым","Назарово","Назрань","Называевск","Нальчик","Нариманов","Наро-Фоминск","Нарткала","Нарьян-Мар","Находка","Невель","Невельск","Невинномысск","Невьянск","Нелидово","Неман","Нерехта","Нерчинск","Нерюнгри","Нестеров","Нефтегорск","Нефтекамск","Нефтекумск","Нефтеюганск","Нея","Нижневартовск","Нижнекамск","Нижнеудинск","Нижние Серги","Нижний Ломов","Нижний Новгород","Нижний Тагил","Нижняя Салда","Нижняя Тура","Николаевск","Николаевск-на-Амуре","Никольск (Вологодская область)","Никольск (Пензенская область)","Никольское","Новая Ладога","Новая Ляля","Новоалександровск","Новоалтайск","Новоаннинский","Нововоронеж","Новодвинск","Новозыбков","Новокубанск","Новокузнецк","Новокуйбышевск","Новомичуринск","Новомосковск","Новопавловск","Новоржев","Новороссийск","Новосибирск","Новосиль","Новосокольники","Новотроицк","Новоузенск","Новоульяновск","Новоуральск","Новохопёрск","Новочебоксарск","Новочеркасск","Новошахтинск","Новый Оскол","Новый Уренгой","Ногинск","Нолинск","Норильск","Ноябрьск","Нурлат","Нытва","Нюрба","Нягань","Нязепетровск","Няндома","Облучье","Обнинск","Обоянь","Обь","Одинцово","Озёрск (Калининградская область)","Озёрск (Челябинская область)","Озёры","Октябрьск","Октябрьский","Окуловка","Олёкминск","Оленегорск","Олонец","Омск","Омутнинск","Онега","Опочка","Орёл","Оренбург","Орехово-Зуево","Орлов","Орск","Оса","Осинники","Осташков","Остров","Островной","Острогожск","Отрадное","Отрадный","Оха","Оханск","Очёр","Павлово","Павловск (Воронежская область)","Павловск (Санкт-Петербург)","Павловский Посад","Палласовка","Партизанск","Певек","Пенза","Первомайск","Первоуральск","Перевоз","Пересвет","Переславль-Залесский","Пермь","Пестово","Петергоф","Петров Вал","Петровск","Петровск-Забайкальский","Петрозаводск","Петропавловск-Камчатский","Петухово","Петушки","Печора","Печоры","Пикалёво","Пионерский","Питкяранта","Плавск","Пласт","Плёс","Поворино","Подольск","Подпорожье","Покачи","Покров","Покровск","Полевской","Полесск","Полысаево","Полярные Зори","Полярный","Поронайск","Порхов","Похвистнево","Почеп","Починок","Пошехонье","Правдинск","Приволжск","Приморск (Калининградская область)","Приморск (Ленинградская область)","Приморско-Ахтарск","Приозерск","Прокопьевск","Пролетарск","Протвино","Прохладный","Псков","Пугачёв","Пудож","Пустошка","Пучеж","Пушкин","Пушкино","Пущино","Пыталово","Пыть-Ях","Пятигорск","Радужный (Владимирская область)","Радужный (Ханты-Мансийский АО)","Райчихинск","Раменское","Рассказово","Ревда","Реж","Реутов","Ржев","Родники","Рославль","Россошь","Ростов","Ростов-на-Дону","Рошаль","Ртищево","Рубцовск","Рудня","Руза","Рузаевка","Рыбинск","Рыбное","Рыльск","Ряжск","Рязань","Саки","Салават","Салаир","Салехард","Сальск","Самара","Санкт-Петербург","Саранск","Сарапул","Саратов","Саров","Сасово","Сатка","Сафоново","Саяногорск","Саянск","Светлогорск","Светлоград","Светлый","Светогорск","Свирск","Свободный","Себеж","Севастополь","Северо-Курильск","Северобайкальск","Северодвинск","Североморск","Североуральск","Северск","Севск","Сегежа","Сельцо","Семёнов","Семикаракорск","Семилуки","Сенгилей","Серафимович","Сергач","Сергиев Посад","Сердобск","Серов","Серпухов","Сертолово","Сестрорецк","Сибай","Сим","Симферополь","Сковородино","Скопин","Славгород","Славск","Славянск-на-Кубани","Сланцы","Слободской","Слюдянка","Смоленск","Снежинск","Снежногорск","Собинка","Советск (Калининградская область)","Советск (Кировская область)","Советск (Тульская область)","Советская Гавань","Советский","Сокол","Солигалич","Соликамск","Солнечногорск","Соль-Илецк","Сольвычегодск","Сольцы","Сорочинск","Сорск","Сортавала","Сосенский","Сосновка","Сосновоборск","Сосновый Бор","Сосногорск","Сочи","Спас-Деменск","Спас-Клепики","Спасск","Спасск-Дальний","Спасск-Рязанский","Среднеколымск","Среднеуральск","Сретенск","Ставрополь","Старая Купавна","Старая Русса","Старица","Стародуб","Старый Крым","Старый Оскол","Стерлитамак","Стрежевой","Строитель","Струнино","Ступино","Суворов","Судак","Суджа","Судогда","Суздаль","Сунжа","Суоярви","Сураж","Сургут","Суровикино","Сурск","Сусуман","Сухиничи","Сухой Лог","Сызрань","Сыктывкар","Сысерть","Сычёвка","Сясьстрой","Тавда","Таганрог","Тайга","Тайшет","Талдом","Талица","Тамбов","Тара","Тарко-Сале","Таруса","Татарск","Таштагол","Тверь","Теберда","Тейково","Темников","Темрюк","Терек","Тетюши","Тимашёвск","Тихвин","Тихорецк","Тобольск","Тогучин","Тольятти","Томари","Томмот","Томск","Топки","Торжок","Торопец","Тосно","Тотьма","Трёхгорный","Троицк (Москва)","Троицк (Челябинская область)","Трубчевск","Туапсе","Туймазы","Тула","Тулун","Туран","Туринск","Тутаев","Тында","Тырныауз","Тюкалинск","Тюмень","Уварово","Углегорск","Углич","Удачный","Удомля","Ужур","Узловая","Улан-Удэ","Ульяновск","Унеча","Урай","Урень","Уржум","Урус-Мартан","Урюпинск","Усинск","Усмань","Усолье","Усолье-Сибирское","Уссурийск","Усть-Джегута","Усть-Илимск","Усть-Катав","Усть-Кут","Усть-Лабинск","Устюжна","Уфа","Ухта","Учалы","Уяр","Фатеж","Феодосия","Фокино (Брянская область)","Фокино (Приморский край)","Фролово","Фрязино","Фурманов","Хабаровск","Хадыженск","Ханты-Мансийск","Харабали","Харовск","Хасавюрт","Хвалынск","Хилок","Химки","Холм","Холмск","Хотьково","Цивильск","Цимлянск","Циолковский","Чадан","Чайковский","Чапаевск","Чаплыгин","Чебаркуль","Чебоксары","Чегем","Чекалин","Челябинск","Чердынь","Черемхово","Черепаново","Череповец","Черкесск","Чёрмоз","Черноголовка","Черногорск","Чернушка","Черняховск","Чехов","Чистополь","Чита","Чкаловск","Чудово","Чулым","Чусовой","Чухлома","Шагонар","Шадринск","Шали","Шарыпово","Шарья","Шатура","Шахты","Шахунья","Шацк","Шебекино","Шелехов","Шенкурск","Шилка","Шимановск","Шиханы","Шлиссельбург","Шумерля","Шумиха","Шуя","Щёкино","Щёлкино","Щёлково","Щербинка","Щигры","Щучье","Электрогорск","Электросталь","Электроугли","Элиста","Энгельс","Эртиль","Югорск","Южа","Южно-Сахалинск","Южно-Сухокумск","Южноуральск","Юрга","Юрьев-Польский","Юрьевец","Юрюзань","Юхнов","Ядрин","Якутск","Ялта","Ялуторовск","Янаул","Яранск","Яровое","Ярославль","Ярцево","Ясногорск","Ясный","Яхрома"];
+
+  var state = {
+    requireGoogleAuth: null,
+    googleIdToken: null,
+    codeCount: 0
+  };
+
+  var root = document.getElementById('raffle-root');
+  var loadingEl = document.getElementById('rfLoading');
+  var formEl = document.getElementById('rfForm');
+  var authBoxEl = document.getElementById('rfAuthBox');
+  var authStatusEl = document.getElementById('rfAuthStatus');
+  var codesContainer = document.getElementById('rfCodesContainer');
+  var addCodeBtn = document.getElementById('rfAddCode');
+  var submitBtn = document.getElementById('rfSubmit');
+  var resultsEl = document.getElementById('rfResults');
+  var errorBoxEl = document.getElementById('rfErrorBox');
+  var cityInput = document.getElementById('rfCity');
+  var cityList = document.getElementById('rfCityList');
+  var phoneInput = document.getElementById('rfPhone');
+  var consentInput = document.getElementById('rfConsent');
+  var vkInput = document.getElementById('rfVk');
+  var fioInput = document.getElementById('rfFio');
+
+  function addCodeRow() {
+    if (state.codeCount >= MAX_CODES) return;
+    state.codeCount++;
+    var row = document.createElement('div');
+    row.className = 'rf-code-row';
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'rf-code-input';
+    input.maxLength = 6;
+    input.placeholder = 'Например: aB3kq7';
+    row.appendChild(input);
+    if (state.codeCount > 1) {
+      var removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'rf-code-remove';
+      removeBtn.textContent = '×';
+      removeBtn.addEventListener('click', function () {
+        row.remove();
+        state.codeCount--;
+      });
+      row.appendChild(removeBtn);
+    }
+    codesContainer.appendChild(row);
+  }
+  addCodeBtn.addEventListener('click', addCodeRow);
+
+  phoneInput.addEventListener('input', function () {
+    var digits = phoneInput.value.replace(/\D/g, '');
+    if (digits.startsWith('8')) digits = '7' + digits.slice(1);
+    if (!digits.startsWith('7')) digits = '7' + digits;
+    digits = digits.slice(0, 11);
+    var formatted = '+7';
+    if (digits.length > 1) formatted += ' (' + digits.slice(1, 4);
+    if (digits.length >= 4) formatted += ') ' + digits.slice(4, 7);
+    if (digits.length >= 7) formatted += '-' + digits.slice(7, 9);
+    if (digits.length >= 9) formatted += '-' + digits.slice(9, 11);
+    phoneInput.value = formatted;
+  });
+
+  function renderCityList(filter) {
+    var query = (filter || '').trim().toLowerCase();
+    var matches = query
+      ? CITIES.filter(function (c) { return c.toLowerCase().indexOf(query) !== -1; }).slice(0, 50)
+      : CITIES.slice(0, 30);
+    cityList.innerHTML = '';
+    if (matches.length === 0) {
+      cityList.classList.remove('rf-open');
+      return;
+    }
+    matches.forEach(function (city) {
+      var item = document.createElement('div');
+      item.className = 'rf-city-item';
+      item.textContent = city;
+      item.addEventListener('mousedown', function (e) {
+        e.preventDefault();
+        cityInput.value = city;
+        cityList.classList.remove('rf-open');
+      });
+      cityList.appendChild(item);
+    });
+    cityList.classList.add('rf-open');
+  }
+  cityInput.addEventListener('input', function () { renderCityList(cityInput.value); });
+  cityInput.addEventListener('focus', function () { renderCityList(cityInput.value); });
+  cityInput.addEventListener('blur', function () {
+    setTimeout(function () { cityList.classList.remove('rf-open'); }, 100);
+  });
+
+  function updateSubmitState() {
+    submitBtn.disabled = state.requireGoogleAuth === true && !state.googleIdToken;
+  }
+
+  function onGoogleSignIn(response) {
+    state.googleIdToken = response.credential;
+    authStatusEl.textContent = 'Вход выполнен ✓';
+    updateSubmitState();
+  }
+  window.__rfOnGoogleSignIn = onGoogleSignIn;
+
+  function loadScriptOnce(src) {
+    return new Promise(function (resolve, reject) {
+      var s = document.createElement('script');
+      s.src = src;
+      s.async = true;
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+
+  function initGoogleSignInButton() {
+    loadScriptOnce('https://accounts.google.com/gsi/client').then(function () {
+      google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: onGoogleSignIn
+      });
+      google.accounts.id.renderButton(
+        document.getElementById('googleSignInButton'),
+        { theme: 'outline', size: 'large', text: 'signin_with', locale: 'ru' }
+      );
+    });
+  }
+
+  function showError(message) {
+    errorBoxEl.textContent = message;
+    errorBoxEl.style.display = 'block';
+  }
+  function hideError() {
+    errorBoxEl.style.display = 'none';
+  }
+
+  var ERROR_MESSAGES = {
+    auth_required: 'Пожалуйста, войдите через Google и отправьте форму ещё раз.',
+    auth_invalid: 'Не удалось подтвердить вход через Google. Попробуйте войти ещё раз.',
+    rate_limited: 'Слишком много попыток с этого аккаунта. Попробуйте позже.',
+    missing_fields: 'Заполните, пожалуйста, все поля формы.',
+    invalid_vk: 'Ссылка на VK должна начинаться с vk.com/ или vk.ru/.',
+    no_codes: 'Добавьте хотя бы один код.',
+    bad_request: 'Произошла ошибка. Попробуйте ещё раз.',
+    internal_error: 'Произошла ошибка. Попробуйте ещё раз позже.',
+    rejected: 'Произошла ошибка. Попробуйте ещё раз.'
+  };
+
+  var RESULT_MESSAGES = {
+    ok: { cls: 'rf-result-ok', text: '— код зарегистрирован' },
+    not_found: { cls: 'rf-result-fail', text: '— код не найден' },
+    already_used: { cls: 'rf-result-fail', text: '— код уже был использован' }
+  };
+
+  formEl.addEventListener('submit', function (e) {
+    e.preventDefault();
+    hideError();
+    resultsEl.innerHTML = '';
+
+    if (!consentInput.checked) {
+      showError('Нужно согласиться на обработку персональных данных.');
+      return;
+    }
+    var vk = vkInput.value.trim();
+    if (!/^(https?:\/\/)?(www\.)?(vk\.com|vk\.ru)\//i.test(vk)) {
+      showError('Ссылка на VK должна начинаться с vk.com/ или vk.ru/.');
+      return;
+    }
+    var codeInputs = codesContainer.querySelectorAll('.rf-code-input');
+    var codes = [];
+    codeInputs.forEach(function (inp) {
+      var v = inp.value.trim();
+      if (v) codes.push(v);
+    });
+    if (codes.length === 0) {
+      showError('Добавьте хотя бы один код.');
+      return;
+    }
+    if (state.requireGoogleAuth && !state.googleIdToken) {
+      showError(ERROR_MESSAGES.auth_required);
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Отправка…';
+
+    var payload = {
+      fio: fioInput.value.trim(),
+      phone: phoneInput.value.trim(),
+      city: cityInput.value.trim(),
+      vk: vk,
+      codes: codes,
+      googleIdToken: state.googleIdToken,
+      website: document.querySelector('input[name="website"]').value
+    };
+    fetch(BACKEND_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    }).then(function (res) { return res.json(); }).then(function (data) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Зарегистрировать';
+      updateSubmitState();
+
+      if (!data.ok) {
+        showError(ERROR_MESSAGES[data.error] || 'Произошла ошибка. Попробуйте ещё раз.');
+        if (data.error === 'auth_required' || data.error === 'auth_invalid') {
+          authBoxEl.style.display = 'block';
+        }
+        return;
+      }
+      data.results.forEach(function (r) {
+        var info = RESULT_MESSAGES[r.status] || RESULT_MESSAGES.not_found;
+        var row = document.createElement('div');
+        row.className = 'rf-result-row ' + info.cls;
+        row.textContent = r.code + ' ' + info.text;
+        resultsEl.appendChild(row);
+      });
+    }).catch(function () {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Зарегистрировать';
+      updateSubmitState();
+      showError('Не удалось отправить форму. Проверьте соединение и попробуйте ещё раз.');
+    });
+  });
+
+  fetch(BACKEND_URL, { method: 'GET' })
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      state.requireGoogleAuth = !!data.requireGoogleAuth;
+    }).catch(function () {
+      state.requireGoogleAuth = false;
+    }).then(function () {
+      loadingEl.style.display = 'none';
+      formEl.style.display = 'block';
+      addCodeRow();
+      if (state.requireGoogleAuth) {
+        authBoxEl.style.display = 'block';
+        initGoogleSignInButton();
+      }
+      updateSubmitState();
+    });
+})();
+</script>
+</body>
+</html>
