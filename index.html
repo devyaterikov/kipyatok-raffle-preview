@@ -250,14 +250,12 @@
             <div id="rfAuthStatus" class="rf-auth-status"></div>
           </div>
 
-          <div id="rfEmbeddedSection" style="display:none;">
-            <p>Похоже, вы открыли страницу во встроенном браузере (внутри приложения соцсети или мессенджера). Вход через Google в таких браузерах блокирует сам Google — откройте, пожалуйста, эту страницу в Safari или Chrome.</p>
+          <div id="rfEmbeddedSection" style="margin-top:14px; padding-top:14px; border-top:1px dashed #cfd8d5;">
+            <p id="rfEmbeddedText">Если кнопка входа не открывается (часто бывает в Telegram, VK и других приложениях) — откройте эту страницу в Safari или Chrome:</p>
             <button type="button" class="rf-add-code" id="rfCopyLink">Скопировать ссылку страницы</button>
             <a id="rfOpenChrome" class="rf-add-code" style="display:none; text-decoration:none; margin-left:8px;">Открыть в Chrome</a>
             <div id="rfCopyStatus" class="rf-auth-status"></div>
           </div>
-
-          <a href="#" id="rfToggleEmbeddedHelp" style="display:block; margin-top:10px; font-size:12px; color:#888;">Не получается войти? Откройте страницу в Safari или Chrome</a>
         </div>
 
         <div class="rf-field">
@@ -434,25 +432,18 @@
 
   function initEmbeddedBrowserHelp() {
     var googleSection = document.getElementById('rfGoogleAuthSection');
-    var embeddedSection = document.getElementById('rfEmbeddedSection');
-    var toggleHelp = document.getElementById('rfToggleEmbeddedHelp');
+    var embeddedText = document.getElementById('rfEmbeddedText');
     var copyLinkBtn = document.getElementById('rfCopyLink');
     var copyStatus = document.getElementById('rfCopyStatus');
     var openChromeLink = document.getElementById('rfOpenChrome');
 
-    function showEmbeddedHelp() {
-      googleSection.style.display = 'none';
-      embeddedSection.style.display = 'block';
-      toggleHelp.style.display = 'none';
-    }
-
+    // Блок «открыть в браузере» виден всегда (см. HTML) — детект встроенных
+    // браузеров ненадёжен (Telegram и на iOS, и на Android неотличим от обычного
+    // браузера по User-Agent), поэтому подсказка не может зависеть только от него.
+    // Если браузер распознан точно — прячем заведомо нерабочую кнопку Google.
     if (isEmbeddedBrowser()) {
-      showEmbeddedHelp();
-    } else {
-      toggleHelp.addEventListener('click', function (e) {
-        e.preventDefault();
-        showEmbeddedHelp();
-      });
+      googleSection.style.display = 'none';
+      embeddedText.textContent = 'Похоже, вы открыли страницу во встроенном браузере (внутри приложения соцсети или мессенджера). Вход через Google в таких браузерах блокирует сам Google — откройте, пожалуйста, эту страницу в Safari или Chrome:';
     }
 
     if (/Android/i.test(navigator.userAgent)) {
