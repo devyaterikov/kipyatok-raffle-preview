@@ -266,7 +266,7 @@
               <div id="googleSignInButton"></div>
             </div>
             <div id="rfVkAuthSection" style="display:none; margin-bottom:10px;">
-              <div id="vkSignInButton"></div>
+              <button type="button" class="rf-add-code" id="rfVkButton">Войти через VK</button>
             </div>
             <div id="rfYandexAuthSection" style="display:none; margin-bottom:10px;">
               <button type="button" class="rf-add-code" id="rfYandexButton">Войти через Яндекс</button>
@@ -575,30 +575,73 @@
     });
   }
 
-  function initVkSignInButton() {
-    loadScriptOnce('https://unpkg.com/@vkid/sdk/dist-sdk/umd/index.js').then(function () {
-      VKIDSDK.Config.init({
-        app: Number(VK_APP_ID),
-        redirectUrl: location.origin + location.pathname,
-        responseMode: VKIDSDK.ConfigResponseMode.Callback,
-        source: VKIDSDK.ConfigSource.LOWCODE,
-        scope: ''
-      });
-      var oneTap = new VKIDSDK.OneTap();
-      oneTap.render({
-        container: document.getElementById('vkSignInButton'),
-        showAlternativeLogin: false
-      }).on(VKIDSDK.WidgetEvents.ERROR, function () {
-        authStatusEl.textContent = 'Не удалось войти через VK. Попробуйте другой способ.';
-      }).on(VKIDSDK.OneTapInternalEvents.LOGIN_SUCCESS, function (payload) {
-        var code = payload.code;
-        var deviceId = payload.device_id;
-        VKIDSDK.Auth.exchangeCode(code, deviceId).then(function (result) {
-          onProviderSignIn('vk', result.access_token);
-        }).catch(function () {
-          authStatusEl.textContent = 'Не удалось войти через VK. Попробуйте другой способ.';
+  function base64UrlEncode(bytes) {
+    var str = '';
+    for (var i = 0; i < bytes.length; i++) str += String.fromCharCode(bytes[i]);
+    return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+
+  function generateRandomString() {
+    var array = new Uint8Array(32);
+    crypto.getRandomValues(array);
+    return base64UrlEncode(array);
+  }
+
+  function sha256Base64Url(text) {
+    var encoder = new TextEncoder();
+    return crypto.subtle.digest('SHA-256', encoder.encode(text)).then(function (buf) {
+      return base64UrlEncode(new Uint8Array(buf));
+    });
+  }
+
+  function initVkButton() {
+    document.getElementById('rfVkButton').addEventListener('click', function () {
+      var verifier = generateRandomString();
+      sessionStorage.setItem('vk_code_verifier', verifier);
+      sha256Base64Url(verifier).then(function (challenge) {
+        var redirectUri = location.origin + location.pathname;
+        var params = new URLSearchParams({
+          response_type: 'code',
+          client_id: VK_APP_ID,
+          redirect_uri: redirectUri,
+          code_challenge: challenge,
+          code_challenge_method: 's256',
+          state: 'vk',
+          scope: ''
         });
+        window.location.href = 'https://id.vk.com/authorize?' + params.toString();
       });
+    });
+  }
+
+  function checkVkReturn() {
+    var params = new URLSearchParams(location.search);
+    var code = params.get('code');
+    var stateParam = params.get('state');
+    if (!code || stateParam !== 'vk') return;
+    var deviceId = params.get('device_id') || '';
+    var verifier = sessionStorage.getItem('vk_code_verifier') || '';
+    var redirectUri = location.origin + location.pathname;
+    history.replaceState({}, '', location.pathname);
+    authStatusEl.textContent = 'Завершаем вход через VK…';
+    fetch(BACKEND_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action: 'vk_exchange',
+        code: code,
+        codeVerifier: verifier,
+        deviceId: deviceId,
+        redirectUri: redirectUri
+      })
+    }).then(function (res) { return res.json(); }).then(function (data) {
+      if (data.ok && data.accessToken) {
+        onProviderSignIn('vk', data.accessToken, data.displayName);
+      } else {
+        authStatusEl.textContent = 'Не удалось войти через VK, попробуйте ещё раз.';
+      }
+    }).catch(function () {
+      authStatusEl.textContent = 'Не удалось войти через VK, попробуйте ещё раз.';
     });
   }
 
@@ -768,13 +811,12 @@
         }
         if (state.providers.vk) {
           document.getElementById('rfVkAuthSection').style.display = 'block';
-          initVkSignInButton();
+          initVkButton();
+          checkVkReturn();
         }
         if (state.providers.yandex) {
           document.getElementById('rfYandexAuthSection').style.display = 'block';
           initYandexButton();
-        }
-        if (state.providers.yandex) {
           checkYandexReturn();
         }
       }
