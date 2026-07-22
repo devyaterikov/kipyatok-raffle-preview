@@ -185,11 +185,19 @@
     margin-top: 8px;
   }
   #raffle-root .rf-signed-in {
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  #raffle-root .rf-signed-in-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     font-size: 13px;
     color: var(--dark-green);
     font-weight: 500;
-    margin-bottom: 16px;
-    text-align: center;
+    padding: 6px 14px;
+    background: #e7f6ef;
+    border-radius: 20px;
   }
   #raffle-root .rf-submit {
     width: 100%;
@@ -277,7 +285,9 @@
 
         <div id="rfFieldsSection" style="display:none;">
 
-          <div id="rfSignedInStatus" class="rf-signed-in" style="display:none;">Вход выполнен ✓</div>
+          <div id="rfSignedInStatus" class="rf-signed-in" style="display:none;">
+            <span class="rf-signed-in-badge" id="rfSignedInBadge">Вход выполнен ✓</span>
+          </div>
 
           <div class="rf-field">
             <label>Код(ы) с покупки</label>
@@ -446,17 +456,41 @@
   function revealFieldsSection() {
     authSectionEl.style.display = 'none';
     fieldsSectionEl.style.display = 'block';
-    signedInStatusEl.style.display = isAnyProviderEnabled() ? 'block' : 'none';
+    if (isAnyProviderEnabled()) {
+      signedInStatusEl.style.display = 'block';
+      signedInBadgeEl.textContent = state.authDisplayName
+        ? 'Вход выполнен: ' + state.authDisplayName + ' ✓'
+        : 'Вход выполнен ✓';
+    } else {
+      signedInStatusEl.style.display = 'none';
+    }
     updateSubmitState();
   }
 
-  function onProviderSignIn(provider, token) {
+  function decodeJwtPayload(jwt) {
+    try {
+      var base64 = jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      var json = decodeURIComponent(atob(base64).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(json);
+    } catch (err) {
+      return null;
+    }
+  }
+
+  var signedInBadgeEl = document.getElementById('rfSignedInBadge');
+
+  function onProviderSignIn(provider, token, displayName) {
     state.authProvider = provider;
     state.authToken = token;
+    state.authDisplayName = displayName || null;
     revealFieldsSection();
   }
   window.__rfOnGoogleSignIn = function (response) {
-    onProviderSignIn('google', response.credential);
+    var payload = decodeJwtPayload(response.credential);
+    var displayName = payload && (payload.name || payload.email);
+    onProviderSignIn('google', response.credential, displayName);
   };
 
   function loadScriptOnce(src) {
