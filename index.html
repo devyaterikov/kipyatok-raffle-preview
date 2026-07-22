@@ -42,13 +42,13 @@
   #raffle-root .rf-logo-wrap {
     display: inline-block;
     background: #fff;
-    padding: 8px 16px;
-    border-radius: 12px;
-    margin-bottom: 14px;
+    padding: 12px 22px;
+    border-radius: 14px;
+    margin-bottom: 16px;
   }
   #raffle-root .rf-logo {
     display: block;
-    height: 36px;
+    height: 76px;
     width: auto;
   }
   #raffle-root .rf-header h2 {
@@ -673,7 +673,7 @@
           code_challenge: challenge,
           code_challenge_method: 's256',
           state: 'vk',
-          scope: ''
+          scope: 'email'
         });
         window.location.href = 'https://id.vk.com/authorize?' + params.toString();
       });
