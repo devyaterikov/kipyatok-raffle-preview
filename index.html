@@ -256,7 +256,7 @@
 
       <div id="rfLoading" class="rf-loading">Загрузка формы…</div>
 
-      <form id="rfForm" style="display:none;">
+      <div id="rfContent" style="display:none;">
 
         <div id="rfAuthSection" class="rf-auth-box" style="display:none;">
           <p>Для защиты от накруток подтвердите вход через один из аккаунтов:</p>
@@ -283,6 +283,7 @@
           </div>
         </div>
 
+        <form id="rfForm">
         <div id="rfFieldsSection" style="display:none;">
 
           <div id="rfSignedInStatus" class="rf-signed-in" style="display:none;">
@@ -331,10 +332,11 @@
 
           <button type="submit" class="rf-submit" id="rfSubmit">Зарегистрировать</button>
         </div>
+        </form>
 
         <div id="rfResults" class="rf-results"></div>
         <div id="rfErrorBox" class="rf-error-box" style="display:none;"></div>
-      </form>
+      </div>
 
     </div>
   </div>
@@ -360,6 +362,7 @@
 
   var loadingEl = document.getElementById('rfLoading');
   var formEl = document.getElementById('rfForm');
+  var contentEl = document.getElementById('rfContent');
   var authSectionEl = document.getElementById('rfAuthSection');
   var fieldsSectionEl = document.getElementById('rfFieldsSection');
   var signedInStatusEl = document.getElementById('rfSignedInStatus');
@@ -747,7 +750,7 @@
       state.providers = {};
     }).then(function () {
       loadingEl.style.display = 'none';
-      formEl.style.display = 'block';
+      contentEl.style.display = 'block';
       addCodeRow();
 
       if (!isAnyProviderEnabled()) {
