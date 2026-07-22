@@ -39,6 +39,18 @@
     padding: 24px 28px;
     text-align: center;
   }
+  #raffle-root .rf-logo-wrap {
+    display: inline-block;
+    background: #fff;
+    padding: 8px 16px;
+    border-radius: 12px;
+    margin-bottom: 14px;
+  }
+  #raffle-root .rf-logo {
+    display: block;
+    height: 36px;
+    width: auto;
+  }
   #raffle-root .rf-header h2 {
     margin: 0;
     font-size: 22px;
@@ -188,7 +200,10 @@
   #raffle-root .rf-btn-yandex {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
+    width: 260px;
+    max-width: 100%;
     border: none;
     border-radius: 8px;
     padding: 10px 16px;
@@ -293,6 +308,9 @@
 <div id="raffle-root">
   <div class="rf-card">
     <div class="rf-header">
+      <div class="rf-logo-wrap">
+        <img class="rf-logo" src="https://static.tildacdn.com/tild3837-3139-4332-a637-643234366236/logoo.png" alt="Кипяток">
+      </div>
       <h2>Регистрация в розыгрыше</h2>
       <p>Введите код(ы) с покупки и заполните форму</p>
     </div>
@@ -618,7 +636,7 @@
       });
       google.accounts.id.renderButton(
         document.getElementById('googleSignInButton'),
-        { theme: 'outline', size: 'large', text: 'signin_with', locale: 'ru' }
+        { theme: 'outline', size: 'large', text: 'signin_with', locale: 'ru', width: 260 }
       );
     });
   }
