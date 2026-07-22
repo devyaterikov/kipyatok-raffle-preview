@@ -626,7 +626,7 @@
       body: JSON.stringify({ action: 'yandex_exchange', code: code })
     }).then(function (res) { return res.json(); }).then(function (data) {
       if (data.ok && data.accessToken) {
-        onProviderSignIn('yandex', data.accessToken);
+        onProviderSignIn('yandex', data.accessToken, data.displayName);
       } else {
         authStatusEl.textContent = 'Не удалось войти через Яндекс, попробуйте ещё раз.';
       }
