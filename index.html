@@ -462,7 +462,7 @@
   var vkInput = document.getElementById('rfVk');
   var fioInput = document.getElementById('rfFio');
 
-  function addCodeRow() {
+  function addCodeRow(prefillValue) {
     if (state.codeCount >= MAX_CODES) return;
     state.codeCount++;
     var row = document.createElement('div');
@@ -472,6 +472,7 @@
     input.className = 'rf-code-input';
     input.maxLength = 6;
     input.placeholder = 'Например: aB3kq7';
+    if (prefillValue) input.value = prefillValue;
     row.appendChild(input);
     if (state.codeCount > 1) {
       var removeBtn = document.createElement('button');
@@ -876,7 +877,8 @@
     }).then(function () {
       loadingEl.style.display = 'none';
       contentEl.style.display = 'block';
-      addCodeRow();
+      var prefillCode = new URLSearchParams(location.search).get('code') || '';
+      addCodeRow(prefillCode);
 
       if (!isAnyProviderEnabled()) {
         revealFieldsSection();
