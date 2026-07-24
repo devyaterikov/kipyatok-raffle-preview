@@ -401,7 +401,7 @@
           </div>
 
           <div class="rf-field">
-            <label for="rfVk">Ссылка на страницу VK</label>
+            <label for="rfVk">Ссылка на страницу VK (необязательно)</label>
             <input type="text" id="rfVk" autocomplete="off" maxlength="200" placeholder="https://vk.com/ваш_профиль">
           </div>
 
@@ -854,7 +854,7 @@
       return;
     }
     var vk = vkInput.value.trim();
-    if (!/^(https?:\/\/)?(www\.)?(vk\.com|vk\.ru)\//i.test(vk)) {
+    if (vk && !/^(https?:\/\/)?(www\.)?(vk\.com|vk\.ru)\//i.test(vk)) {
       showError('Ссылка на VK должна начинаться с vk.com/ или vk.ru/.');
       return;
     }
