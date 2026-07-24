@@ -518,9 +518,23 @@
     return codes;
   }
 
+  // VK по пути вырезает не-буквенно-цифровые символы из state (проверено на
+  // практике), поэтому разделитель между кодами использовать нельзя — вместо
+  // этого коды просто конкатенируются (все ровно по 6 символов) и разбираются
+  // обратно по 6 символов при возврате.
   function buildStateParam_(provider) {
-    var codes = getCurrentCodeValues_();
-    return codes.length > 0 ? provider + ':' + codes.join(',') : provider;
+    var codes = getCurrentCodeValues_().filter(function (c) { return /^[A-Za-z0-9]{6}$/.test(c); });
+    return provider + codes.join('');
+  }
+
+  function parseStateParam_(stateParam, provider) {
+    if (!stateParam || stateParam.indexOf(provider) !== 0) return null;
+    var rest = stateParam.slice(provider.length);
+    var codes = [];
+    for (var i = 0; i + 6 <= rest.length; i += 6) {
+      codes.push(rest.slice(i, i + 6));
+    }
+    return codes;
   }
 
   function replaceCodesWithArray_(codes) {
@@ -734,10 +748,9 @@
   function checkVkReturn() {
     var params = new URLSearchParams(location.search);
     var code = params.get('code');
-    var stateParam = params.get('state') || '';
-    var stateParts = stateParam.split(':');
-    if (!code || stateParts[0] !== 'vk') return;
-    replaceCodesWithArray_(stateParts[1] ? stateParts[1].split(',') : []);
+    var restoredCodes = parseStateParam_(params.get('state'), 'vk');
+    if (!code || restoredCodes === null) return;
+    replaceCodesWithArray_(restoredCodes);
     var deviceId = params.get('device_id') || '';
     var verifier = sessionStorage.getItem('vk_code_verifier') || '';
     var redirectUri = location.origin + location.pathname;
@@ -780,10 +793,9 @@
   function checkYandexReturn() {
     var params = new URLSearchParams(location.search);
     var code = params.get('code');
-    var stateParam = params.get('state') || '';
-    var stateParts = stateParam.split(':');
-    if (!code || stateParts[0] !== 'yandex') return;
-    replaceCodesWithArray_(stateParts[1] ? stateParts[1].split(',') : []);
+    var restoredCodes = parseStateParam_(params.get('state'), 'yandex');
+    if (!code || restoredCodes === null) return;
+    replaceCodesWithArray_(restoredCodes);
     history.replaceState({}, '', location.pathname);
     authStatusEl.textContent = 'Завершаем вход через Яндекс…';
     fetch(BACKEND_URL, {
