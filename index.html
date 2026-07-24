@@ -183,6 +183,14 @@
     color: var(--blue);
     font-weight: 500;
   }
+  #raffle-root .rf-success {
+    text-align: center;
+  }
+  #raffle-root .rf-success h3 {
+    margin: 0 0 4px;
+    font-size: 19px;
+    color: var(--dark-green);
+  }
   #raffle-root .rf-honeypot {
     position: absolute;
     left: -9999px;
@@ -216,12 +224,12 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    width: 260px;
+    width: 230px;
     max-width: 100%;
     border: none;
     border-radius: 8px;
-    padding: 10px 16px;
-    font-size: 14px;
+    padding: 8px 14px;
+    font-size: 13px;
     font-weight: 500;
     font-family: inherit;
     color: #fff;
@@ -358,7 +366,6 @@
           <div id="rfEmbeddedSection" style="margin-top:14px; padding-top:14px; border-top:1px dashed #cfd8d5;">
             <p id="rfEmbeddedText">Если кнопка входа не открывается (часто бывает в Telegram, VK и других приложениях) — откройте эту страницу в Safari или Chrome:</p>
             <button type="button" class="rf-add-code" id="rfCopyLink">Скопировать ссылку страницы</button>
-            <a id="rfOpenChrome" class="rf-add-code" style="display:none; text-decoration:none; margin-left:8px;">Открыть в Chrome</a>
             <div id="rfCopyStatus" class="rf-auth-status"></div>
           </div>
         </div>
@@ -411,12 +418,15 @@
           </label>
 
           <button type="submit" class="rf-submit" id="rfSubmit">Зарегистрировать</button>
-
-          <p class="rf-vk-note">Результаты розыгрыша будут опубликованы в нашей группе ВКонтакте — <a href="https://vk.com/school_bryansk32" target="_blank" rel="noopener">vk.com/school_bryansk32</a><br>Вступайте, чтобы не пропустить</p>
         </div>
         </form>
 
-        <div id="rfResults" class="rf-results"></div>
+        <div id="rfSuccessSection" class="rf-success" style="display:none;">
+          <h3>Спасибо за участие в розыгрыше!</h3>
+          <div id="rfResults" class="rf-results"></div>
+          <p class="rf-vk-note">Результаты розыгрыша будут опубликованы в нашей группе ВКонтакте — <a href="https://vk.com/school_bryansk32" target="_blank" rel="noopener">vk.com/school_bryansk32</a><br>Вступайте, чтобы не пропустить</p>
+        </div>
+
         <div id="rfErrorBox" class="rf-error-box" style="display:none;"></div>
       </div>
 
@@ -447,6 +457,7 @@
   var contentEl = document.getElementById('rfContent');
   var authSectionEl = document.getElementById('rfAuthSection');
   var fieldsSectionEl = document.getElementById('rfFieldsSection');
+  var successSectionEl = document.getElementById('rfSuccessSection');
   var signedInStatusEl = document.getElementById('rfSignedInStatus');
   var authStatusEl = document.getElementById('rfAuthStatus');
   var codesContainer = document.getElementById('rfCodesContainer');
@@ -470,6 +481,11 @@
     var input = document.createElement('input');
     input.type = 'text';
     input.className = 'rf-code-input';
+    input.name = 'raffle-code-' + state.codeCount;
+    input.autocomplete = 'off';
+    input.setAttribute('autocapitalize', 'off');
+    input.setAttribute('autocorrect', 'off');
+    input.setAttribute('spellcheck', 'false');
     input.maxLength = 6;
     input.placeholder = 'Например: aB3kq7';
     if (prefillValue) input.value = prefillValue;
@@ -600,7 +616,6 @@
     var embeddedText = document.getElementById('rfEmbeddedText');
     var copyLinkBtn = document.getElementById('rfCopyLink');
     var copyStatus = document.getElementById('rfCopyStatus');
-    var openChromeLink = document.getElementById('rfOpenChrome');
 
     // Блок «открыть в браузере» виден всегда (см. HTML) — детект встроенных
     // браузеров ненадёжен (Telegram и на iOS, и на Android неотличим от обычного
@@ -609,13 +624,6 @@
     if (isEmbeddedBrowser()) {
       providerButtons.style.display = 'none';
       embeddedText.textContent = 'Похоже, вы открыли страницу во встроенном браузере (внутри приложения соцсети или мессенджера). Вход через такие браузеры блокируется — откройте, пожалуйста, эту страницу в Safari или Chrome:';
-    }
-
-    if (/Android/i.test(navigator.userAgent)) {
-      var target = location.href.replace(/^https?:\/\//, '');
-      openChromeLink.href = 'intent://' + target + '#Intent;scheme=https;package=com.android.chrome;end';
-      openChromeLink.textContent = 'Открыть в Chrome';
-      openChromeLink.style.display = 'inline-block';
     }
 
     copyLinkBtn.addEventListener('click', function () {
@@ -653,7 +661,7 @@
       });
       google.accounts.id.renderButton(
         document.getElementById('googleSignInButton'),
-        { theme: 'outline', size: 'large', text: 'signin_with', locale: 'ru', width: 260 }
+        { theme: 'outline', size: 'medium', text: 'signin_with', locale: 'ru', width: 230 }
       );
     });
   }
@@ -731,7 +739,8 @@
   function buildYandexAuthUrl() {
     var redirectUri = location.origin + location.pathname;
     return 'https://oauth.yandex.ru/authorize?response_type=code&client_id=' +
-      encodeURIComponent(YANDEX_CLIENT_ID) + '&redirect_uri=' + encodeURIComponent(redirectUri);
+      encodeURIComponent(YANDEX_CLIENT_ID) + '&redirect_uri=' + encodeURIComponent(redirectUri) +
+      '&state=yandex';
   }
 
   function initYandexButton() {
@@ -743,7 +752,8 @@
   function checkYandexReturn() {
     var params = new URLSearchParams(location.search);
     var code = params.get('code');
-    if (!code) return;
+    var stateParam = params.get('state');
+    if (!code || stateParam !== 'yandex') return;
     history.replaceState({}, '', location.pathname);
     authStatusEl.textContent = 'Завершаем вход через Яндекс…';
     fetch(BACKEND_URL, {
@@ -860,6 +870,9 @@
         row.textContent = r.code + ' ' + info.text;
         resultsEl.appendChild(row);
       });
+      authSectionEl.style.display = 'none';
+      fieldsSectionEl.style.display = 'none';
+      successSectionEl.style.display = 'block';
     }).catch(function () {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Зарегистрировать';
