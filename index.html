@@ -507,31 +507,28 @@
 
   // VK/Яндекс используют полный переход на чужой домен и обратно (в отличие от
   // Google, где вход идёт всплывающим окном без перезагрузки страницы) — поэтому
-  // уже введённые коды нужно явно сохранить перед уходом и восстановить при возврате,
-  // иначе они потеряются вместе с состоянием страницы.
-  function savePendingCodes_() {
+  // уже введённые коды нужно провезти через сам redirect. Коды не секретны (всё
+  // равно уйдут в форме), поэтому едут прямо в параметре state, а не в
+  // sessionStorage — не зависим от Storage API браузера на чужом домене.
+  function getCurrentCodeValues_() {
     var codes = [];
     codesContainer.querySelectorAll('.rf-code-input').forEach(function (inp) {
       if (inp.value.trim()) codes.push(inp.value.trim());
     });
-    if (codes.length > 0) {
-      sessionStorage.setItem('rf_pending_codes', JSON.stringify(codes));
-    }
+    return codes;
   }
 
-  function restorePendingCodes_() {
-    var saved = sessionStorage.getItem('rf_pending_codes');
-    sessionStorage.removeItem('rf_pending_codes');
-    if (!saved) return false;
-    try {
-      var codes = JSON.parse(saved);
-      codesContainer.innerHTML = '';
-      state.codeCount = 0;
-      codes.forEach(function (c) { addCodeRow(c); });
-      return codes.length > 0;
-    } catch (err) {
-      return false;
-    }
+  function buildStateParam_(provider) {
+    var codes = getCurrentCodeValues_();
+    return codes.length > 0 ? provider + ':' + codes.join(',') : provider;
+  }
+
+  function replaceCodesWithArray_(codes) {
+    if (!codes || codes.length === 0) return false;
+    codesContainer.innerHTML = '';
+    state.codeCount = 0;
+    codes.forEach(function (c) { addCodeRow(c); });
+    return true;
   }
 
   phoneInput.addEventListener('input', function () {
@@ -716,7 +713,6 @@
 
   function initVkButton() {
     document.getElementById('rfVkButton').addEventListener('click', function () {
-      savePendingCodes_();
       var verifier = generateRandomString();
       sessionStorage.setItem('vk_code_verifier', verifier);
       sha256Base64Url(verifier).then(function (challenge) {
@@ -727,7 +723,7 @@
           redirect_uri: redirectUri,
           code_challenge: challenge,
           code_challenge_method: 's256',
-          state: 'vk',
+          state: buildStateParam_('vk'),
           scope: 'email'
         });
         window.location.href = 'https://id.vk.com/authorize?' + params.toString();
@@ -738,8 +734,10 @@
   function checkVkReturn() {
     var params = new URLSearchParams(location.search);
     var code = params.get('code');
-    var stateParam = params.get('state');
-    if (!code || stateParam !== 'vk') return;
+    var stateParam = params.get('state') || '';
+    var stateParts = stateParam.split(':');
+    if (!code || stateParts[0] !== 'vk') return;
+    replaceCodesWithArray_(stateParts[1] ? stateParts[1].split(',') : []);
     var deviceId = params.get('device_id') || '';
     var verifier = sessionStorage.getItem('vk_code_verifier') || '';
     var redirectUri = location.origin + location.pathname;
@@ -770,12 +768,11 @@
     var redirectUri = location.origin + location.pathname;
     return 'https://oauth.yandex.ru/authorize?response_type=code&client_id=' +
       encodeURIComponent(YANDEX_CLIENT_ID) + '&redirect_uri=' + encodeURIComponent(redirectUri) +
-      '&state=yandex';
+      '&state=' + encodeURIComponent(buildStateParam_('yandex'));
   }
 
   function initYandexButton() {
     document.getElementById('rfYandexButton').addEventListener('click', function () {
-      savePendingCodes_();
       window.location.href = buildYandexAuthUrl();
     });
   }
@@ -783,8 +780,10 @@
   function checkYandexReturn() {
     var params = new URLSearchParams(location.search);
     var code = params.get('code');
-    var stateParam = params.get('state');
-    if (!code || stateParam !== 'yandex') return;
+    var stateParam = params.get('state') || '';
+    var stateParts = stateParam.split(':');
+    if (!code || stateParts[0] !== 'yandex') return;
+    replaceCodesWithArray_(stateParts[1] ? stateParts[1].split(',') : []);
     history.replaceState({}, '', location.pathname);
     authStatusEl.textContent = 'Завершаем вход через Яндекс…';
     fetch(BACKEND_URL, {
@@ -921,14 +920,13 @@
     }).then(function () {
       loadingEl.style.display = 'none';
       contentEl.style.display = 'block';
-      if (!restorePendingCodes_()) {
-        var urlParams = new URLSearchParams(location.search);
-        // "code" без "state" — это наш параметр из QR-ссылки; "code" вместе с
-        // "state" — это код авторизации, вернувшийся от VK/Яндекс (обрабатывается
-        // отдельно в checkVkReturn/checkYandexReturn), подставлять его в поле нельзя.
-        var prefillCode = !urlParams.get('state') ? (urlParams.get('code') || '') : '';
-        addCodeRow(prefillCode);
-      }
+      var urlParams = new URLSearchParams(location.search);
+      // "code" без "state" — это наш параметр из QR-ссылки; "code" вместе с
+      // "state" — это код авторизации, вернувшийся от VK/Яндекс (обрабатывается
+      // отдельно в checkVkReturn/checkYandexReturn, включая восстановление
+      // ранее введённых кодов из самого state), подставлять его в поле нельзя.
+      var prefillCode = !urlParams.get('state') ? (urlParams.get('code') || '') : '';
+      addCodeRow(prefillCode);
 
       if (!isAnyProviderEnabled()) {
         revealFieldsSection();
